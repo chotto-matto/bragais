@@ -1,0 +1,38 @@
+body {
+  background-color: #a131b8;
+}
+body section {
+  width: 70%;
+  margin: auto;
+}
+body section.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body section.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+body section.form-container .title-wrapper {
+  background-color: #a85db8;
+}
+body section.form-container .form-wrapper {
+  background-color: #ffffff;
+  text-align: center;
+  padding: 75px 25px 25px;
+  width: 30%;
+}
+body section.form-container .form-wrapper input {
+  width: 80%;
+  padding: 10px;
+  margin: 15px 0;
+}
+body section.form-container .form-wrapper button {
+  width: 50%;
+  padding: 10px 15px;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}/*# sourceMappingURL=index.css.map */

@@ -1,0 +1,43 @@
+$color-darkPurple: #a131b8;
+$color-lightPurple: #a85db8;
+$color-white: #ffffff;
+
+body{
+    background-color: $color-darkPurple;
+
+    section{
+        width: 70%;
+        margin: auto;
+        &.logo-container{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        &.form-container{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            .title-wrapper{
+                background-color: $color-lightPurple;
+            }
+            .form-wrapper{
+                background-color: $color-white;
+                text-align: center;
+                padding: 75px 25px 25px;
+                width: 30%;
+                input{
+                    width: 80%;
+                    padding: 10px;
+                    margin: 15px 0;
+                }
+                button{
+                    width: 50%;
+                    padding: 10px 15px;
+                    margin-top: 20px;
+                    margin-bottom: 15px;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,16 @@
+section{
+    &.wrapper{
+        .table-wrapper{
+            table{
+                border: 1px solid;
+                border-collapse: collapse;
+                margin: auto;
+                td, th{
+                    border: 1px solid;
+                    padding: 10px;
+                    text-align: center;
+                }
+            }
+        }
+    }
+}

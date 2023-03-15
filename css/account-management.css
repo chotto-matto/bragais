@@ -1,0 +1,10 @@
+section.wrapper .table-wrapper table {
+  border: 1px solid;
+  border-collapse: collapse;
+  margin: auto;
+}
+section.wrapper .table-wrapper table td, section.wrapper .table-wrapper table th {
+  border: 1px solid;
+  padding: 10px;
+  text-align: center;
+}/*# sourceMappingURL=account-management.css.map */
