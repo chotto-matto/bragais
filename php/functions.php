@@ -210,7 +210,7 @@ function updateAccess($con, $accessType, $EID)
                     <td>'.$row['Color'].'</td>
                     <td>'.$row['HeelHeight'].'</td>
                     <td>'.$row['Stock'].'</td>
-                    <td>'.$row['Price'].'</td>
+                    <td>₱'.$row['Price'].'</td>
                     <td>'.$row['Status'].'</td>
                     <td>'.$row['DateTransferred'].'</td>
                 </tr>';
@@ -280,7 +280,79 @@ function updateAccess($con, $accessType, $EID)
 
     function restockSearchItem($con, $prodID)
     {
+        $sql = "select * from factory_inventory where ProductID = ?";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../../restock.php?error=updatestatementfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "s", $prodID);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        header("location: ../../restock.php?prod_id=".$prodID."");
+        exit();
+    }
+
+    function displayRestockSearchedItem($con, $prodID)
+    {
+        $sql = "select * from factory_inventory where ProductID = ?";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ./restock.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "s", $prodID);
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+        while($row = mysqli_fetch_assoc($resultData)) {
+            
+            echo '<input type="hidden" id="prodID" name="prodID" value="'.$prodID.'">
+            <table class="general-table">
+                    <tr>
+                        <th>Model</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Heel Height</th>
+                        <th>Stock</th>
+                    </tr>
+                    <tr>
+                        <td>'.$row['Model'].'</td>
+                        <td>'.$row['Size'].'</td>
+                        <td>'.$row['Color'].'</td>
+                        <td>'.$row['HeelHeight'].'</td>
+                        <td>'.$row['Stock'].'</td>
+                    </tr>
+                </table>';
+        }
         
+        mysqli_stmt_close($stmt);
+    }
+
+    function addStocks($con, $quantity, $prodID)
+    {
+        $sql = "update factory_inventory set Stock = Stock + ? where ProductID = ?";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../../restock.php?error=updatestatementfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "ss", $quantity, $prodID);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        header("location: ../../restock.php?prod_id=".$prodID."");
+        exit();
     }
 
 

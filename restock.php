@@ -11,47 +11,55 @@
 <body>
     <?php
         include_once 'php/nav.php';
+        include_once 'php/config.php';
+        include_once 'php/functions.php';
     ?>
     <div class="main-content">
         <h2>Restock</h2>
         <hr>
-        <h4>*You can either select or scan the item ID using Barcode Scanner</h4>
+        <h4>*You can either type or scan the item ID using Barcode Scanner</h4>
 
-        <form id="restock-form" action="">
-            <label for="id-dropdown">Select Item ID:</label>
-            <select name="id-dropdown" id="id-dropdown">
-                <option value="Item ID" selected>Item ID</option>
-            </select>
+        <form id="restock-form" action="php/actions/restock-search.php" method="post">
             <label for="id-scan">Scan Item ID</label>
             <input type="text" name="id-scan" id="id-scan">
-            <button>Confirm</button>
-            <br>
-            <h4>Product Details</h4>
-            <table class="general-table">
-                <tr>
-                    <th>Model</th>
-                    <th>Size</th>
-                    <th>Color</th>
-                    <th>Heel Height</th>
-                    <th>Stock</th>
-                </tr>
-                <tr>
-                    <td>Shoe 1</td>
-                    <td>6</td>
-                    <td>Color 1</td>
-                    <td>6.5 Inches</td>
-                    <td>5</td>
-                </tr>
-            </table>
-            <br>
-            <label for="restock-quantity">Quantity to be Restocked</label>
-            <input type="number">
-
-            <button type="submit">Restock</button>
-            <br>
-
+            <button type="submit" name="submit" id="submit">Confirm</button>
         </form>
 
+
+        <form action="php/actions/add-stock.php" method="post">
+            <br>
+            <h4>Product Details</h4>
+            <?php
+            
+                if (isset($_GET["prod_id"])) {
+                    displayRestockSearchedItem($con, $_GET["prod_id"]);
+                }else{
+                    echo '<table class="general-table">
+                        <tr>
+                            <th>Model</th>
+                            <th>Size</th>
+                            <th>Color</th>
+                            <th>Heel Height</th>
+                            <th>Stock</th>
+                        </tr>
+                        <tr>
+                            <td>Select Item ID</td>
+                            <td>Select Item ID</td>
+                            <td>Select Item ID</td>
+                            <td>Select Item ID</td>
+                            <td>Select Item ID</td>
+                        </tr>
+                    </table>';
+                }
+            ?>
+
+            <br>
+            <label for="restock-quantity">Quantity to be Restocked</label>
+            <input type="number" id="restock-quantity" name="restock-quantity">
+
+            <button type="submit" name="submit">Restock</button>
+            <br>
+        </form>
     </div>
 </body>
 </html>

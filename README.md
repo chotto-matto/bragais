@@ -1,5 +1,2 @@
 # Bragais
-Bragais website
-
-
-Repository of bragais website
+Bragais Inventory
