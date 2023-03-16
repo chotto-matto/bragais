@@ -444,6 +444,24 @@ function updateAccess($con, $accessType, $EID)
         
     }
 
+    function addLog($con, $logAction)
+    {
+        $date = date('Y/m/d');
 
+        $sql = "insert into inventory_logs(log_action, date_logged) values (?, ?)";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../logs.php?error=insertsttmntfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "ss", $logAction, $date);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        header("location: ../../logs.php?error=none");
+        exit();
+    }
 ?>
 
