@@ -1,12 +1,8 @@
 <?php
+    include_once 'php/loginvalidator.php';
     include_once 'php/config.php';
     include_once 'php/functions.php';
-
-    // if (!isset($_SESSION["employee_id"])) {
-    //     header("location: sign-in.php?error=wronglogin");
-    // }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

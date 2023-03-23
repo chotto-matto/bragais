@@ -1,3 +1,9 @@
+<?php
+    include_once 'php/loginvalidator.php';
+    include_once 'php/config.php';
+    include_once 'php/functions.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
