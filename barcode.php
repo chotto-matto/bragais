@@ -7,58 +7,72 @@
     <title>Home</title>
 
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/barcode.css">
 </head>
 <body>
 
     <?php
         include_once 'php/nav.php';
+        include_once 'php/config.php';
+        include_once 'php/functions.php';
     ?>
     <div class="main-content">
         <h2>Print Barcode</h2>
         <hr>
         <div class="sub-content">
             <div id="content1">
-                <form action="">
-                    <label for="item-id">Item ID</label>
-                    <input type="text" name="item-id" id="item-id" placeholder="Item ID">
-                    <label for="model">Model</label>
-                    <input type="text" name="model" id="model" placeholder="Model">
-                    <label for="size">Size</label>
-                    <input type="text" name="size" id="size" placeholder="Size"> <br>
-                    <label for="color">Color</label>
-                    <input type="text" name="color" id="color" placeholder="Color">
-                    <label for="heel-height">Heel Height</label>
-                    <input type="text" name="heel-height" id="heel-height" placeholder="Heel-height">
-                    <label for="price">Price</label>
-                    <input type="text" name="price" id="price" placeholder="Price">
-
-                    <button type="submit">Confirm</button>
+                <form action="php/actions/barcode-search.php" method="post">
+                    <label for="id-scan">Item ID</label>
+                    <input type="text" name="id-scan" id="id-scan" placeholder="Item ID">
+                    <button type="submit" name="submit" id="submit">Confirm</button>
                 </form>
+
+                <?php
+                    if ($_GET["prod_id"] != "" || $_GET["prod_id"] != null) {
+                        displayBarcodeItem($con, $_GET["prod_id"]);
+
+                    }else{
+                        echo '<table class="general-table">
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Size</th>
+                                    <th>Color</th>
+                                    <th>Heel Height</th>
+                                </tr>
+                                <tr>
+                                    <td>Select Item ID</td>
+                                    <td>Select Item ID</td>
+                                    <td>Select Item ID</td>
+                                    <td>Select Item ID</td>
+                                </tr>
+                            </table>';
+                    }
+                ?>
+                
             </div>
+
             <div id="content2">
-                <h4 id="print-prev">Print Preview</h4>
-                <div id="content2-sub">
-                    <h4>ITEM: Shoe 1</h4>
-                    <h4>--BARCODE HERE--</h4>
-                    <h4>ID: 16397816283769817</h4>
-                    <h4>PRICE: P2000</h4>
-                </div>
-                <button>Print</button>
+                <form action="php/barcode.php" method="post">
+                    <?php
+                        if ($_GET["prod_id"] != "" || $_GET["prod_id"] != null) {
+                            displayBarcode($con, $_GET["prod_id"]);
+                            echo '<label for="barcode-quantity">Quantity: </label>
+                            <input type="number" name="barcode-quantity" id="barcode-quantity" placeholder="Quantity">
+                            
+                            <button type="submit" name="submit">Print</button>';
+                        }else{
+                            echo '<h4 id="print-prev">Print Preview</h4>
+                            <div id="content2-sub">
+                                <h4>ITEM: Select Item ID</h4>
+                                <h4>--Select Item ID--</h4>
+                                <h4>ID: Select Item ID</h4>
+                                <h4>PRICE: Select Item ID</h4>
+                            </div>';
+                        }
+                    ?>
+                </form>
             </div>
         </div>
     </div>
-
-
-    <form class="form-horizontal" method="post" action="php/barcode.php" target="_blank">
-        <label class="control-label col-sm-2" for="product">Product:</label>
-        <input autocomplete="OFF" type="text" class="form-control" id="product" name="product">
-        <label class="control-label col-sm-2" for="product_id">Product ID:</label>
-        <input autocomplete="OFF" type="text" class="form-control" id="product_id" name="product_id">
-        <label class="control-label col-sm-2" for="rate">Rate</label>
-        <input autocomplete="OFF" type="text" class="form-control" id="rate"  name="rate">
-        <label class="control-label col-sm-2" for="print_qty">Barcode Quantity</label>
-        <input autocomplete="OFF" type="print_qty" class="form-control" id="print_qty"  name="print_qty">
-        <button type="submit" class="btn btn-default">Submit</button>
-    </form>
 </body>
 </html>

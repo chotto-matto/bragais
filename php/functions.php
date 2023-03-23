@@ -1,5 +1,7 @@
 <?php 
 
+include 'barcode128.php';
+
 function emptyInputSignUp($employeeID, $agentNo, $fname, $lname, $displayName, $email, $password, $confirmPassword)
 {
     $result;
@@ -69,7 +71,7 @@ function createUser($con, $employeeID, $agentNo, $fname, $lname, $displayName, $
 
     //checks if there is an error with the statement
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header("location: ../login.php?error=stmtfailed");
+        header("location: ../../sign-in.php?error=stmtfailed");
         exit();
     }
 
@@ -79,7 +81,7 @@ function createUser($con, $employeeID, $agentNo, $fname, $lname, $displayName, $
     mysqli_stmt_bind_param($stmt, "ssssssss", $employeeID, $agentNo, $fname, $lname, $displayName, $email, $hashedPW, $access);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
-    header("location: ../login.php?error=none");
+    header("location: ../../sign-in.php?error=none");
     exit();
 }
 
@@ -100,7 +102,7 @@ function loginUser($con, $EID, $password)
     $EIDExists = EIDexists($con, $EID);
 
     if ($usernameExists === false) {
-        header("location: ../index.php?error=wronglogin");
+        header("location: ../../index.php?error=wronglogin");
         exit();
     }
 
@@ -108,13 +110,13 @@ function loginUser($con, $EID, $password)
     $checkPassword = password_verify($password, $pwdHashed);
 
     if ($checkPassword === false) {
-        header("location: ../index.php?error=wronglogin");
+        header("location: ../../index.php?error=wronglogin");
         exit();
     }else if($checkPassword === true){
         session_start();
         $_SESSION["employee_id"] = $EIDExists["employee_id"];
         $_SESSION["display_name"] = $EIDExists["display_name"];
-        header("location: ../index.php");
+        header("location: ../../index.php");
         exit();
     }
 }
@@ -210,7 +212,7 @@ function updateAccess($con, $accessType, $EID)
                     <td>'.$row['Color'].'</td>
                     <td>'.$row['HeelHeight'].'</td>
                     <td>'.$row['Stock'].'</td>
-                    <td>'.$row['Price'].'</td>
+                    <td>₱'.$row['Price'].'</td>
                     <td>'.$row['Status'].'</td>
                     <td>'.$row['DateTransferred'].'</td>
                 </tr>';
@@ -280,9 +282,186 @@ function updateAccess($con, $accessType, $EID)
 
     function restockSearchItem($con, $prodID)
     {
+        $sql = "select * from factory_inventory where ProductID = ?";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../../restock.php?error=updatestatementfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "s", $prodID);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        header("location: ../../restock.php?prod_id=".$prodID."");
+        exit();
+    }
+
+    function displayRestockSearchedItem($con, $prodID)
+    {
+        $sql = "select * from factory_inventory where ProductID = ?";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ./restock.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "s", $prodID);
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+        while($row = mysqli_fetch_assoc($resultData)) {
+            
+            echo '<input type="hidden" id="prodID" name="prodID" value="'.$prodID.'">
+            <table class="general-table">
+                    <tr>
+                        <th>Model</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Heel Height</th>
+                        <th>Stock</th>
+                    </tr>
+                    <tr>
+                        <td>'.$row['Model'].'</td>
+                        <td>'.$row['Size'].'</td>
+                        <td>'.$row['Color'].'</td>
+                        <td>'.$row['HeelHeight'].'</td>
+                        <td>'.$row['Stock'].'</td>
+                    </tr>
+                </table>';
+        }
+        
+        mysqli_stmt_close($stmt);
+    }
+
+    function addStocks($con, $quantity, $prodID)
+    {
+        $sql = "update factory_inventory set Stock = Stock + ? where ProductID = ?";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../../restock.php?error=updatestatementfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "ss", $quantity, $prodID);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        header("location: ../../restock.php?prod_id=".$prodID."");
+        exit();
+    }
+
+    function barcodeSearchItem($con, $prodID)
+    {
+        $sql = "select * from factory_inventory where ProductID = ?";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../../barcode.php?error=updatestatementfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "s", $prodID);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        header("location: ../../barcode.php?prod_id=".$prodID."");
+        exit();
+    }
+
+    function displayBarcodeItem($con, $prodID)
+    {
+        $sql = "select * from factory_inventory where ProductID = ?";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../barcode.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "s", $prodID);
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+        while($row = mysqli_fetch_assoc($resultData)) {
+            
+            echo '<input type="hidden" id="prodID" name="prodID" value="'.$prodID.'">
+            <table class="general-table">
+                <tr>
+                    <th>Model</th>
+                    <th>Size</th>
+                    <th>Color</th>
+                    <th>Heel Height</th>
+                </tr>
+                <tr>
+                    <td>'.$row['Model'].'</td>
+                    <td>'.$row['Size'].'</td>
+                    <td>'.$row['Color'].'</td>
+                    <td>'.$row['HeelHeight'].'</td>
+                </tr>
+            </table>';
+        }
+        
+        mysqli_stmt_close($stmt);
+    }
+
+    function displayBarcode($con, $prodID)
+    {
+        $sql = "select * from factory_inventory where ProductID = ?";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../barcode.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "s", $prodID);
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+        while($row = mysqli_fetch_assoc($resultData)) {
+        
+            echo '<input type="hidden" id="model" name="model" value="'.$row['Model'].'">
+            <input type="hidden" id="product_id" name="product_id" value="'.$prodID.'">
+            <input type="hidden" id="price" name="price" value="'.$row['Price'].'">
+            <h4 id="print-prev">Print Preview</h4>
+            <div id="content2-sub">
+                <h4>ITEM: '.$row['Model'].'</h4>
+                <h4>--'.bar128(stripcslashes($prodID)).'--</h4>
+                <h4>PRICE: '.$row['Price'].'</h4>
+            </div>';
+        
+        }
         
     }
 
+    function addLog($con, $logAction)
+    {
+        $date = date('Y/m/d');
 
+        $sql = "insert into inventory_logs(log_action, date_logged) values (?, ?)";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../logs.php?error=insertsttmntfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "ss", $logAction, $date);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        header("location: ../../logs.php?error=none");
+        exit();
+    }
 ?>
 

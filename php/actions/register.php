@@ -17,17 +17,10 @@ if (isset($_POST["submit"])) {
     require_once '../config.php';
     require_once '../functions.php';
 
-    echo $username;
-
     if (emptyInputSignUp($EID, $agentNo, $fname, $lname, $displayname, $email, $password, $confirmPassword) !== false) {
         header("location: ../../sign-up.php?error=emptyinput");
         exit();
     }
-
-    // if (invalidusername($username) !== false) {
-    //     header("location: ../register.php?error=invalidusername");
-    //     exit();
-    // }
 
     if (invalidEmail($email) !== false) {
         header("location: ../../sign-up.php?error=invalidemail");
