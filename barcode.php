@@ -34,10 +34,9 @@
                 </form>
 
                 <?php
-                    if ($_GET["prod_id"] != "" || $_GET["prod_id"] != null) {
+                    if (isset($_GET["prod_id"])){
                         displayBarcodeItem($con, $_GET["prod_id"]);
-
-                    }else{
+                    }else {
                         echo '<table class="general-table">
                                 <tr>
                                     <th>Model</th>
@@ -60,7 +59,7 @@
             <div id="content2">
                 <form action="php/barcode.php" method="post">
                     <?php
-                        if ($_GET["prod_id"] != "" || $_GET["prod_id"] != null) {
+                        if (isset($_GET["prod_id"])){
                             displayBarcode($con, $_GET["prod_id"]);
                             echo '<label for="barcode-quantity">Quantity: </label>
                             <input type="number" name="barcode-quantity" id="barcode-quantity" placeholder="Quantity">

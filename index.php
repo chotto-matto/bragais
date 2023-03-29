@@ -14,10 +14,10 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-
     <?php
         include_once 'php/nav.php';
     ?>
+    
     <div class="main-content">
         <h2>Stock List</h2>
         <hr>

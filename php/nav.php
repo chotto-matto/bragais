@@ -1,8 +1,10 @@
 <?php
-    echo '<div class="nav">
-    
+    echo '
+    <div class="title"><h1>Factory Inventory</h1></div>
+    <div class="nav">
     <ul>
-        <h2>Hi '. $_SESSION['display_name'] .'</h2>
+        <h2>Hi '. $_SESSION['display_name'] .'!</h2>
+        <br>
         <li><a href="index.php">Stock List</a></li>
         <li><a href="manage-stocks.php">Manage Stocks</a></li>
         <li><a href="restock.php">Restock</a></li>

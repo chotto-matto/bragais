@@ -3,6 +3,16 @@ body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
+.title{
+    text-align: center;
+    background-color: #a231b8b4;
+    padding: 1%;
+}
+
+.title h1{
+    margin: auto;
+}
+
 button {
     display: block;
     padding: .5% 2%;
@@ -13,7 +23,7 @@ ul{
     margin: 0;
     padding: 5% 0 0 0;
     width: 18%;
-    background-color: #f1f1f1;
+    background-color: #5c176b;
     position: fixed;
     height: 100%;
     overflow: auto;
@@ -55,7 +65,7 @@ li a:hover:not(.active) {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
-  }
+}
 
 .main-content form{
     margin-top: 100px;
