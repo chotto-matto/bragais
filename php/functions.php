@@ -1,6 +1,7 @@
 <?php 
 
 include 'barcode128.php';
+date_default_timezone_set("Asia/Hong_Kong");
 
 function emptyInputSignUp($employeeID, $agentNo, $fname, $lname, $displayName, $email, $password, $confirmPassword)
 {
@@ -74,6 +75,8 @@ function createUser($con, $employeeID, $agentNo, $fname, $lname, $displayName, $
         header("location: ../../sign-in.php?error=stmtfailed");
         exit();
     }
+    session_start();
+    addLog($con, "Account created", "Employee #" . $employeeID, date('m d yy'));
 
     //hashes password
     $hashedPW = password_hash($password, PASSWORD_DEFAULT);
@@ -101,7 +104,7 @@ function loginUser($con, $EID, $password)
 {
     $EIDExists = EIDexists($con, $EID);
 
-    if ($usernameExists === false) {
+    if ($EIDExists === false) {
         header("location: ../../index.php?error=wronglogin");
         exit();
     }
@@ -116,6 +119,7 @@ function loginUser($con, $EID, $password)
         session_start();
         $_SESSION["employee_id"] = $EIDExists["employee_id"];
         $_SESSION["display_name"] = $EIDExists["display_name"];
+        addLog($con, "Logged In", "Employee #" . $_SESSION["employee_id"], date('m d yy'));
         header("location: ../../index.php");
         exit();
     }
@@ -187,7 +191,7 @@ function updateAccess($con, $accessType, $EID)
 
     //For showing stocks on Stock List page
     function displayStocks($con){
-        $sql = "select * from factory_inventory";
+        $sql = "select * from factory_inventory where not status = 'Unlisted'";
         $stmt = mysqli_stmt_init($con);
 
         //checks if there is an error with the statement
@@ -232,6 +236,8 @@ function updateAccess($con, $accessType, $EID)
             header("location: ../new-item.php?error=insertsttmntfailed");
             exit();
         }
+        session_start();
+        addLog($con, "Created New Product " . $prodID, "Employee #" . $_SESSION["employee_id"], date('m d yy'));
 
         mysqli_stmt_bind_param($stmt, "ssssssssss", $prodID, $model, $color, $size, $heelHeight, $categ, $price, $quantity, $status, $dateTransferred);
         mysqli_stmt_execute($stmt);
@@ -252,6 +258,8 @@ function updateAccess($con, $accessType, $EID)
             header("location: ../../edit-item.php?error=updatestatementfailed");
             exit();
         }
+        session_start();
+        addLog($con, "Updated Product " . $prodID, "Employee #" . $_SESSION["employee_id"], date('m d yy'));
 
         mysqli_stmt_bind_param($stmt, "sssssss", $model, $color, $size, $heelHeight, $categ, $price, $prodID);
         mysqli_stmt_execute($stmt);
@@ -271,6 +279,8 @@ function updateAccess($con, $accessType, $EID)
             header("location: ../../manage-stock.php?error=updatestatementfailed");
             exit();
         }
+        session_start();
+        addLog($con, "Transferred Product " . $prodID . " to " . $dept, "Employee #" . $_SESSION["employee_id"], date('m d yy'));
 
         mysqli_stmt_bind_param($stmt, "ss", $dept, $prodID);
         mysqli_stmt_execute($stmt);
@@ -348,6 +358,8 @@ function updateAccess($con, $accessType, $EID)
             header("location: ../../restock.php?error=updatestatementfailed");
             exit();
         }
+        session_start();
+        addLog($con, "Restocked Item " . $prodID, "Employee #" . $_SESSION["employee_id"], date('m d yy'));
 
         mysqli_stmt_bind_param($stmt, "ss", $quantity, $prodID);
         mysqli_stmt_execute($stmt);
@@ -444,11 +456,11 @@ function updateAccess($con, $accessType, $EID)
         
     }
 
-    function addLog($con, $logAction)
+    function addLog($con, $logAction, $user, $date)
     {
         $date = date('Y/m/d');
 
-        $sql = "insert into inventory_logs(log_action, date_logged) values (?, ?)";
+        $sql = "insert into inventory_logs(log_action, user, date_logged) values (?, ?, ?)";
         $stmt = mysqli_stmt_init($con);
 
         //checks if there is an error with the statement
@@ -457,11 +469,34 @@ function updateAccess($con, $accessType, $EID)
             exit();
         }
 
-        mysqli_stmt_bind_param($stmt, "ss", $logAction, $date);
+        mysqli_stmt_bind_param($stmt, "sss", $logAction, $user, $date);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
-        header("location: ../../logs.php?error=none");
-        exit();
+    }
+
+    function displayLogs($con)
+    {
+        $sql = "select * from inventory_logs";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../logs.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+        while($row = mysqli_fetch_assoc($resultData)) {
+            echo '
+            <tr>
+            <td>'.$row["log_id"].'</td>
+            <td>'.$row["log_action"].'</td>
+            <td>'.$row["user"].'</td>
+            <td>'.$row["date_logged"].'</td>
+            </tr>';
+        }
     }
 ?>
 

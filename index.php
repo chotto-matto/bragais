@@ -1,12 +1,8 @@
 <?php
+    include_once 'php/loginvalidator.php';
     include_once 'php/config.php';
     include_once 'php/functions.php';
-
-    // if (!isset($_SESSION["employee_id"])) {
-    //     header("location: sign-in.php?error=wronglogin");
-    // }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,10 +14,10 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-
     <?php
         include_once 'php/nav.php';
     ?>
+    
     <div class="main-content">
         <h2>Stock List</h2>
         <hr>

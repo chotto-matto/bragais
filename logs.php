@@ -1,3 +1,8 @@
+<?php
+    include_once 'php/loginvalidator.php';
+    include_once 'php/config.php';
+    include_once 'php/functions.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,13 +25,12 @@
             <tr>
                 <th>Log ID</th>
                 <th>Log Action</th>
+                <th>User</th>
                 <th>Date Logged</th>
             </tr>
-            <tr>
-                <td>1</td>
-                <td>Log Action 1</td>
-                <td>02/16/2023</td>
-            </tr>
+            <?php 
+                displayLogs($con);
+            ?>
         </table>
     </div>
 </body>
