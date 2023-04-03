@@ -75,8 +75,8 @@ function createUser($con, $employeeID, $agentNo, $fname, $lname, $displayName, $
         header("location: ../../sign-in.php?error=stmtfailed");
         exit();
     }
-    session_start();
-    addLog($con, "Account created", "Employee #" . $employeeID, date('m d yy'));
+    //session_start();
+    //addLog($con, "Account created", "Employee #" . $employeeID, date('m d yy'));
 
     //hashes password
     $hashedPW = password_hash($password, PASSWORD_DEFAULT);
@@ -497,6 +497,63 @@ function updateAccess($con, $accessType, $EID)
             <td>'.$row["date_logged"].'</td>
             </tr>';
         }
+    }
+
+    function updateItemListing($con, $prodStat, $prodID)
+    {
+        $sql = "update factory_inventory set Status = ? where ProductID = ?";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../../manage-stock.php?error=updatestatementfailed");
+            exit();
+        }
+        session_start();
+        addLog($con, "Changed Product " . $prodID . " status to " . $prodStat, "Employee #" . $_SESSION["employee_id"], date('m d yy'));
+
+        mysqli_stmt_bind_param($stmt, "ss", $prodStat, $prodID);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        header("location: ../../manage-stocks.php?error=none");
+        exit();
+    }
+
+    function displayUnlistedProducts($con)
+    {
+        $sql = "select * from factory_inventory where status = 'Unlisted'";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../manage-stocks.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+        while($row = mysqli_fetch_assoc($resultData)) {
+
+            // foreach ($row as $columnName => $columnData) {
+            //     echo 'Column name: ' . $columnName . ' Column data: ' . $columnData . '<br />';
+            // }
+            
+            echo '<tr>
+                    <td>'.$row['ProductID'].'</td>
+                    <td>'.$row['Model'].'</td>
+                    <td>'.$row['Size'].'</td>
+                    <td>'.$row['Color'].'</td>
+                    <td>'.$row['HeelHeight'].'</td>
+                    <td>'.$row['Stock'].'</td>
+                    <td>'.$row['Price'].'</td>
+                    <td>'.$row['Status'].'</td>
+                    <td>'.$row['DateTransferred'].'</td>
+                </tr>';
+        }
+        
+        mysqli_stmt_close($stmt);
     }
 ?>
 
