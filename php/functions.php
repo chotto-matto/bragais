@@ -1,8 +1,5 @@
 <?php 
 
-include 'barcode128.php';
-date_default_timezone_set("Asia/Hong_Kong");
-
 function emptyInputSignUp($employeeID, $agentNo, $fname, $lname, $displayName, $email, $password, $confirmPassword)
 {
     $result;
@@ -119,7 +116,7 @@ function loginUser($con, $EID, $password)
         session_start();
         $_SESSION["employee_id"] = $EIDExists["employee_id"];
         $_SESSION["display_name"] = $EIDExists["display_name"];
-        addLog($con, "Logged In", "Employee #" . $_SESSION["employee_id"], date('m d yy'));
+        addLog($con, "Logged In", "Employee #" . $_SESSION["employee_id"], date('m/d/Y'));
         header("location: ../../index.php");
         exit();
     }
@@ -215,16 +212,76 @@ function updateAccess($con, $accessType, $EID)
                     <td>'.$row['Size'].'</td>
                     <td>'.$row['Color'].'</td>
                     <td>'.$row['HeelHeight'].'</td>
+                    <td>'.$row['Category'].'</td>
                     <td>'.$row['Stock'].'</td>
                     <td>₱'.$row['Price'].'</td>
-                    <td>'.$row['Status'].'</td>
-                    <td>'.$row['DateTransferred'].'</td>
                 </tr>';
         }
         
         mysqli_stmt_close($stmt);
     }
 
+    function displayDevelopment($con){
+        $sql = "select * from development";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ./dev.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+        while($row = mysqli_fetch_assoc($resultData)) {
+
+            // foreach ($row as $columnName => $columnData) {
+            //     echo 'Column name: ' . $columnName . ' Column data: ' . $columnData . '<br />';
+            // }
+            
+            echo '<tr>
+                    <td>'.$row['BatchID'].'</td>
+                    <td>'.$row['ProductID'].'</td>
+                    <td>'.$row['Model'].'</td>
+                    <td>'.$row['Color'].'</td>
+                    <td>'.$row['Size'].'</td>
+                    <td>'.$row['HeelHeight'].'</td>
+                    <td>'.$row['Category'].'</td>
+                    <td>₱'.$row['Price'].'</td>
+                    <td>'.$row['Quantity'].'</td>
+                    <td>'.$row['Status'].'</td>
+                    <td>'.$row['LastUpdate'].'</td>
+                </tr>';
+        }
+        
+        mysqli_stmt_close($stmt);
+    }
+
+    function prodIDdropDown($con){
+        $sql = "select * from factory_inventory where not status = 'Unlisted'";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ./dev.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+        while($row = mysqli_fetch_assoc($resultData)) {
+
+            // foreach ($row as $columnName => $columnData) {
+            //     echo 'Column name: ' . $columnName . ' Column data: ' . $columnData . '<br />';
+            // }
+            
+            echo '<option value="'.$row["ProductID"].'">'.$row["ProductID"].'</option>';
+        }
+        
+        mysqli_stmt_close($stmt);
+    }
     //For adding new products
     function insertProducts($con, $prodID, $model, $size, $color, $heelHeight, $quantity, $categ, $price, $status, $dateTransferred){
   
@@ -237,7 +294,7 @@ function updateAccess($con, $accessType, $EID)
             exit();
         }
         session_start();
-        addLog($con, "Created New Product " . $prodID, "Employee #" . $_SESSION["employee_id"], date('m d yy'));
+        addLog($con, "Created New Product " . $prodID, "Employee #" . $_SESSION["employee_id"], date('m/d/Y'));
 
         mysqli_stmt_bind_param($stmt, "ssssssssss", $prodID, $model, $color, $size, $heelHeight, $categ, $price, $quantity, $status, $dateTransferred);
         mysqli_stmt_execute($stmt);
@@ -280,7 +337,7 @@ function updateAccess($con, $accessType, $EID)
             exit();
         }
         session_start();
-        addLog($con, "Transferred Product " . $prodID . " to " . $dept, "Employee #" . $_SESSION["employee_id"], date('m d yy'));
+        addLog($con, "Transferred Product " . $prodID . " to " . $dept, "Employee #" . $_SESSION["employee_id"], date('m/d/Y'));
 
         mysqli_stmt_bind_param($stmt, "ss", $dept, $prodID);
         mysqli_stmt_execute($stmt);
@@ -359,7 +416,7 @@ function updateAccess($con, $accessType, $EID)
             exit();
         }
         session_start();
-        addLog($con, "Restocked Item " . $prodID, "Employee #" . $_SESSION["employee_id"], date('m d yy'));
+        addLog($con, "Restocked Item " . $prodID, "Employee #" . $_SESSION["employee_id"], date('m/d/Y'));
 
         mysqli_stmt_bind_param($stmt, "ss", $quantity, $prodID);
         mysqli_stmt_execute($stmt);
@@ -371,6 +428,9 @@ function updateAccess($con, $accessType, $EID)
 
     function barcodeSearchItem($con, $prodID)
     {
+        
+        include 'barcode128.php';
+        date_default_timezone_set("Asia/Hong_Kong");
         $sql = "select * from factory_inventory where ProductID = ?";
         $stmt = mysqli_stmt_init($con);
 
@@ -390,6 +450,9 @@ function updateAccess($con, $accessType, $EID)
 
     function displayBarcodeItem($con, $prodID)
     {
+        
+        include 'barcode128.php';
+        date_default_timezone_set("Asia/Hong_Kong");
         $sql = "select * from factory_inventory where ProductID = ?";
         $stmt = mysqli_stmt_init($con);
 
@@ -427,6 +490,9 @@ function updateAccess($con, $accessType, $EID)
 
     function displayBarcode($con, $prodID)
     {
+        
+        include 'barcode128.php';
+        date_default_timezone_set("Asia/Hong_Kong");
         $sql = "select * from factory_inventory where ProductID = ?";
         $stmt = mysqli_stmt_init($con);
 
@@ -510,7 +576,7 @@ function updateAccess($con, $accessType, $EID)
             exit();
         }
         session_start();
-        addLog($con, "Changed Product " . $prodID . " status to " . $prodStat, "Employee #" . $_SESSION["employee_id"], date('m d yy'));
+        addLog($con, "Changed Product " . $prodID . " status to " . $prodStat, "Employee #" . $_SESSION["employee_id"], date('m/d/Y'));
 
         mysqli_stmt_bind_param($stmt, "ss", $prodStat, $prodID);
         mysqli_stmt_execute($stmt);
@@ -554,6 +620,53 @@ function updateAccess($con, $accessType, $EID)
         }
         
         mysqli_stmt_close($stmt);
+    }
+
+    function developDisplayFromDropdown($con, $prodID)
+    {
+        $sql = "select * from factory_inventory where ProductID = ?";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../manage-stocks.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "s", $prodID);
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+
+        if ($row = mysqli_fetch_assoc($resultData)) {
+            return $row;
+        }else{
+            $result = false;
+            return $result;
+        }
+
+        mysqli_stmt_close($stmt);
+    }
+ 
+    function insertToDevelop($con, $prodID, $model, $size, $color, $heelHeight, $quantity, $categ, $price, $status, $lastUpdate){
+  
+        $sql = "insert into development(ProductID, Model, Color, Size, HeelHeight, Category, Price, Quantity, Status, LastUpdate) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../dev-item.php?error=insertsttmntfailed");
+            exit();
+        }
+        session_start();
+        addLog($con, "Created New Product " . $prodID, "Employee #" . $_SESSION["employee_id"], date('m/d/Y'));
+
+        mysqli_stmt_bind_param($stmt, "ssssssssss", $prodID, $model, $color, $size, $heelHeight, $categ, $price, $quantity, $status, $lastUpdate);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        header("location: ../../dev-item.php?error=none");
+        exit();
+    
     }
 ?>
 
