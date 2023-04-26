@@ -23,8 +23,8 @@
         <h2>Manage Stock</h2>
         <hr>
         <button class="manage-stock-btn" id="transfer-btn">Transfer Stocks to Other Dept.</button>
-        <button class="manage-stock-btn">Unlist Products</button>
-        <button class="manage-stock-btn">Relist Products</button>
+        <button class="manage-stock-btn" id="unlist-btn">Unlist Products</button>
+        <button class="manage-stock-btn" id="relist-btn">Relist Products</button>
 
         <div id="popup" class="modal">
             <!-- Modal content -->
@@ -54,7 +54,32 @@
                 </form>
             </div>
         </div>
-
+        <div id="popup-unlist" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Unlist Products</h2>
+                <hr>
+                <form action="php/actions/list-update.php" method="post">
+                    <label for="item-id">Item ID:</label>
+                    <input type="text" id="item-id" name="item-id">
+                    <input type="hidden" name="status" value="Unlisted">
+                    <button type="submit" name="submit" id="submit">Confirm</button>
+                </form>
+            </div>
+        </div>
+        <div id="popup-relist" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Relist Products</h2>
+                <hr>
+                <form action="php/actions/list-update.php" method="post">
+                    <label for="item-id">Item ID:</label>
+                    <input type="text" id="item-id" name="item-id">
+                    <input type="hidden" name="status" value="Pending">
+                    <button type="submit" name="submit" id="submit">Confirm</button>
+                </form>
+            </div>
+        </div>
         <div class="stock-sub-content1">
             <!-- <h3 id="pull-out-title">Pulled Out Products</h3>
             <table class="general-table">
@@ -97,17 +122,9 @@
                     <th>Current Status</th>
                     <th>Date Unlisted</th>
                 </tr>
-                <tr>
-                    <td>8</td>
-                    <td>Shoe 8</td>
-                    <td>8</td>
-                    <td>Color 5</td>
-                    <td>6.5 inches</td>
-                    <td>20</td>
-                    <td>P2500</td>
-                    <td>Unlisted</td>
-                    <td>02/16/2023</td>
-                </tr>
+                <?php
+                    displayUnlistedProducts($con)
+                ?>
             </table>
         </div>
 
@@ -116,16 +133,30 @@
     <script>
         // Get the modal
         var modal = document.getElementById("popup");
+        var modalUnlist = document.getElementById("popup-unlist");
+        var modalRelist = document.getElementById("popup-relist");
 
         // Get the button that opens the modal
         var btn = document.getElementById("transfer-btn");
+        var btnUnlist = document.getElementById("unlist-btn");
+        var btnRelist = document.getElementById("relist-btn");
 
         // Get the <span> element that closes the modal
         var span = document.getElementsByClassName("close")[0];
+        var spanUnlist = document.getElementsByClassName("close")[1];
+        var spanRelist = document.getElementsByClassName("close")[2];
 
         // When the user clicks the button, open the modal 
         btn.onclick = function() {
             modal.style.display = "block";
+        }
+
+        btnUnlist.onclick = function() {
+            modalUnlist.style.display = "block";
+        }
+
+        btnRelist.onclick = function() {
+            modalRelist.style.display = "block";
         }
 
         // When the user clicks on <span> (x), close the modal
@@ -133,10 +164,20 @@
             modal.style.display = "none";
         }
 
+        spanUnlist.onclick = function() {
+            modalUnlist.style.display = "none";
+        }
+
+        spanRelist.onclick = function() {
+            modalRelist.style.display = "none";
+        }
+
         // When the user clicks anywhere outside of the modal, close it
         window.onclick = function(event) {
             if (event.target == modal) {
                 modal.style.display = "none";
+                modalUnlist.style.display = "none";
+                modalRelist.style.display = "none";
             }
         }
     </script>

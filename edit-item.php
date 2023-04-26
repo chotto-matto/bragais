@@ -13,6 +13,7 @@
     <title>Edit Item</title>
 
     <link rel="stylesheet" href="css/main.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.slim.min.js" integrity="sha256-a2yjHM4jnF9f54xUQakjZGaqYs/V1CYvWpoqZzC2/Bw=" crossorigin="anonymous"></script>
 </head>
 <body>
     <?php
@@ -21,7 +22,7 @@
     <div class="main-content">
         <h2>Edit Item</h2>
         <hr>
-        <form action="php/actions/update-item.php" method="POST">
+        <form action="php/actions/update-item.php" method="POST" onkeydown="return event.key != 'Enter';">
             <label for="item-id">Item ID</label>
             <input type="text" name="item-id" id="item-id" placeholder="Item ID">
             <label for="model">Model</label>
@@ -40,5 +41,13 @@
             <button name="submit" type="submit">Confirm</button>
         </form> 
     </div>
+    <script>
+        $(document).keypress(
+        function(event){
+            if (event.which == '13') {
+            event.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>

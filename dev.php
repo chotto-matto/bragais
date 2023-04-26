@@ -19,21 +19,24 @@
     ?>
     
     <div class="main-content">
-        <h2>Stock List</h2>
+        <h2>Development</h2>
         <hr>
         <table class="general-table">
             <tr>
-                <th>Item ID</th>
+                <th>Batch ID</th>
+                <th>Product ID</th>
                 <th>Model</th>
-                <th>Size</th>
                 <th>Color</th>
+                <th>Size</th>
                 <th>Heel Height</th>
                 <th>Category</th>
-                <th>Stock</th>
                 <th>Price</th>
+                <th>Quantity</th>
+                <th>Current Status</th>
+                <th>Last Update</th>
             </tr>
             <?php
-                displayStocks($con); 
+                displayDevelopment($con); 
             ?>
         </table>
     </div>

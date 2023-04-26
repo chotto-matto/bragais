@@ -14,7 +14,7 @@
         $price = $_POST["price"];
         $quantity = $_POST["quantity"];
         $status = "Pending";
-        $dateTransferred = "02/22/2023";
+        $dateTransferred = date('m/d/Y');
 
         insertProducts($con, $prodID, $model, $size, $color, $heelHeight, $quantity, $categ, $price, $status, $dateTransferred);
     }
