@@ -282,9 +282,34 @@ function updateAccess($con, $accessType, $EID)
         
         mysqli_stmt_close($stmt);
     }
+
+    function batchIDDropdown($con){
+        $sql = "select * from development";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ./dev.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+        while($row = mysqli_fetch_assoc($resultData)) {
+
+            // foreach ($row as $columnName => $columnData) {
+            //     echo 'Column name: ' . $columnName . ' Column data: ' . $columnData . '<br />';
+            // }
+            
+            echo '<option value="'.$row["BatchID"].'">'.$row["BatchID"].'</option>';
+        }
+        
+        mysqli_stmt_close($stmt);
+    }
     //For adding new products
     function insertProducts($con, $prodID, $model, $size, $color, $heelHeight, $quantity, $categ, $price, $status, $dateTransferred){
-  
+
         $sql = "insert into factory_inventory(ProductID, Model, Color, Size, HeelHeight, Category, Price, Stock, Status, DateTransferred) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = mysqli_stmt_init($con);
 
@@ -328,7 +353,7 @@ function updateAccess($con, $accessType, $EID)
 
     function transferProducts($con, $prodID, $dept)
     {
-        $sql = "update factory_inventory set Status = ? where ProductID = ?";
+        $sql = "update development set Status = ? where BatchID = ?";
         $stmt = mysqli_stmt_init($con);
 
         //checks if there is an error with the statement
@@ -428,7 +453,6 @@ function updateAccess($con, $accessType, $EID)
 
     function barcodeSearchItem($con, $prodID)
     {
-        
         include 'barcode128.php';
         date_default_timezone_set("Asia/Hong_Kong");
         $sql = "select * from factory_inventory where ProductID = ?";
