@@ -692,5 +692,87 @@ function updateAccess($con, $accessType, $EID)
         exit();
     
     }
-?>
 
+    function generateBatchID($con)
+    {
+        $monthCode = getMonth(date('m'));
+        $yearCode = getYear(date('y'));
+        $lastRecord = getMaxRecord($con) + 1;
+
+        
+
+    }
+
+    function getMonth($monthIndex)
+    {
+        switch ($monthIndex) {
+            case 1:
+                return $monthValue = "A";
+                break;
+            case 2:
+                return $monthValue = "B";
+                break;
+            case 3:
+                return $monthValue = "C";
+                break;
+            case 4:
+                return $monthValue = "D";
+                break;
+            case 5:
+                return $monthValue = "E";
+                break;
+            case 6:
+                return $monthValue = "F";
+                break;
+            case 7:
+                return $monthValue = "G";
+                break;
+            case 8:
+                return $monthValue = "H";
+                break;
+            case 9:
+                return $monthValue = "I";
+                break;
+            case 10:
+                return $monthValue = "J";
+                break;
+            case 11:
+                return $monthValue = "K";
+                break;
+            case 12:
+                return $monthValue = "L";
+                break;
+        }
+    }
+
+    function getYear($yearIndex)
+    {
+
+    }
+
+    function getMaxRecord($con)
+    {
+        $sql = "select count(*) as maximumIndex from development";
+
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../../edit-item.php?error=updatestatementfailed");
+            exit();
+        }
+        session_start();
+        //addLog($con, "Updated Product " . $prodID, "Employee #" . $_SESSION["employee_id"], date('m d yy'));
+
+        mysqli_stmt_execute($stmt);
+        $resultData = mysqli_stmt_get_result($stmt);
+
+        if ($row = mysqli_fetch_assoc($resultData)) {
+            return $row;
+        }else{
+            $result = false;
+            return $result;
+        }
+        mysqli_stmt_close($stmt);
+    }
+?>
