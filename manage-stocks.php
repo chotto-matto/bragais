@@ -33,8 +33,12 @@
                 <h2>Transfer Stocks to other Department</h2>
                 <hr>
                 <form action="php/actions/transfer-stocks.php" method="post">
-                    <label for="item-id">Item ID:</label>
-                    <input type="text" id="item-id" name="item-id">
+                    <label for="item-id">Batch ID:</label>
+                    <select name="item-id" id="item-id">
+                        <?php
+                            batchIDDropdown($con);
+                        ?>
+                    </select>
                     <!-- <label for="quantity">Quantity to be transferred:</label>
                     <input type="text" id="quantity" name="quantity"> -->
                     <label for="dept">Department to be transferred to:</label>
