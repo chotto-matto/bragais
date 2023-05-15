@@ -668,5 +668,35 @@ function updateAccess($con, $accessType, $EID)
         exit();
     
     }
+
+    function insertToDevelop2($con, $prodID, $model, $size, $color, $heelHeight, $quantity, $categ, $price, $status, $lastUpdate){
+  
+        $sql = "insert into development(ProductID, Model, Color, Size, HeelHeight, Category, Price, Quantity, Status, LastUpdate) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../dev-item.php?error=insertsttmntfailed");
+            exit();
+        }
+        //session_start();
+        //addLog($con, "Created New Product " . $prodID, "Employee #" . $_SESSION["employee_id"], date('m/d/Y'));
+
+        if (count($prodID) > 1 && count($prodID) !== 0) {
+            for ($i=0; $i < count($prodID) - 1; $i++) { 
+                mysqli_stmt_bind_param($stmt, "ssssssssss", current($prodID), current($model), current($color), current($size), current($heelHeight), current($categ), current($price), current($quantity), current($status), current($lastUpdate));
+                mysqli_stmt_execute($stmt);
+            }
+        }elseif (count($prodID) == 1 && count($prodID) !== 0) {
+            mysqli_stmt_bind_param($stmt, "ssssssssss", $prodID, $model, $color, $size, $heelHeight, $categ, $price, $quantity, $status, $lastUpdate);
+            mysqli_stmt_execute($stmt);
+        }
+
+        
+        mysqli_stmt_close($stmt);
+        header("location: ../../dev-item.php?error=none");
+        exit();
+    
+    }
 ?>
 
