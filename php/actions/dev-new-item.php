@@ -16,7 +16,7 @@
         $status = "Pending";
         $dateTransferred = date('m/d/Y');
 
-        insertToDevelop($con, $prodID, $model, $size, $color, $heelHeight, $quantity, $categ, $price, $status, $dateTransferred);
+        insertToDevelopPending($con, $prodID, $model, $size, $color, $heelHeight, $quantity, $categ, $price, $status, $dateTransferred);
     }
 
 ?>

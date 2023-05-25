@@ -1,8 +1,10 @@
 <?php 
 
+date_default_timezone_set("Asia/Shanghai");
+
 function emptyInputSignUp($employeeID, $agentNo, $fname, $lname, $displayName, $email, $password, $confirmPassword)
 {
-    $result;
+    $result = '';
     if (empty($employeeID) || empty($agentNo) || empty($fname) || empty($lname) || empty($displayName) || empty($email) || empty($password) || empty($confirmPassword)) {
         $result = true;
     }else {
@@ -14,7 +16,7 @@ function emptyInputSignUp($employeeID, $agentNo, $fname, $lname, $displayName, $
 
 function pwdMatch($password, $confirmPassword)
 {
-    $result;
+    $result = '';
     if ($password !== $confirmPassword) {
         $result = true;
     }else {
@@ -52,7 +54,7 @@ function EIDexists($con, $employeeID)
 
 function invalidEmail($email)
 {
-    $result;
+    $result = '';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $result = true;
     }else {
@@ -87,7 +89,7 @@ function createUser($con, $employeeID, $agentNo, $fname, $lname, $displayName, $
 
 function emptyInputLogIn($EID, $password)
 {
-    $result;
+    $result = '';
     if (empty($EID) || empty($password)) {
         $result = true;
     }else {
@@ -566,7 +568,7 @@ function updateAccess($con, $accessType, $EID)
 
     function displayLogs($con)
     {
-        $sql = "select * from inventory_logs";
+        $sql = "select * from inventory_logs order by log_id desc";
         $stmt = mysqli_stmt_init($con);
 
         //checks if there is an error with the statement
@@ -672,9 +674,9 @@ function updateAccess($con, $accessType, $EID)
         mysqli_stmt_close($stmt);
     }
  
-    function insertToDevelop($con, $prodID, $model, $size, $color, $heelHeight, $quantity, $categ, $price, $status, $lastUpdate){
+    function insertToDevelopPending($con, $prodID, $model, $size, $color, $heelHeight, $quantity, $categ, $price, $status, $lastUpdate){
   
-        $sql = "insert into development(ProductID, Model, Color, Size, HeelHeight, Category, Price, Quantity, Status, LastUpdate) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "insert into development_pending(ProductID, Model, Color, Size, HeelHeight, Category, Price, Quantity, Status, LastUpdate) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = mysqli_stmt_init($con);
 
         //checks if there is an error with the statement
@@ -683,13 +685,87 @@ function updateAccess($con, $accessType, $EID)
             exit();
         }
         session_start();
-        addLog($con, "Created New Product " . $prodID, "Employee #" . $_SESSION["employee_id"], date('m/d/Y'));
+        addLog($con, "Added To Develop Pending" . $prodID, "Employee #" . $_SESSION["employee_id"], date('m/d/Y'));
 
         mysqli_stmt_bind_param($stmt, "ssssssssss", $prodID, $model, $color, $size, $heelHeight, $categ, $price, $quantity, $status, $lastUpdate);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         header("location: ../../dev-item.php?error=none");
         exit();
+    
+    }
+
+    function displayDevelopCart($con){
+        $sql = "select * from development_pending";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../dev-item.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+        while($row = mysqli_fetch_assoc($resultData)) {
+
+            // foreach ($row as $columnName => $columnData) {
+            //     echo 'Column name: ' . $columnName . ' Column data: ' . $columnData . '<br />';
+            // }
+            
+            echo '<tr>
+                    <td>'.$row['ProductID'].'</td>
+                    <td>'.$row['Model'].'</td>
+                    <td>'.$row['Color'].'</td>
+                    <td>'.$row['Size'].'</td>
+                    <td>'.$row['Quantity'].'</td>
+                </tr>';
+        }
+        
+        mysqli_stmt_close($stmt);
+    }
+
+    function cartToDevelop($con)
+    {
+        $sql = "select * from development_pending";
+        $stmt = mysqli_stmt_init($con);
+        $batchID =  generateBatchID($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../dev-item.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+        while($row = mysqli_fetch_assoc($resultData)) {
+            insertToDevelop($con, $batchID, $row["ProductID"], $row["Model"], $row["Color"], $row["Size"], $row["HeelHeight"], $row["Category"], $row["Price"], $row["Quantity"], $row["Status"], $row["LastUpdate"]);
+        }
+        
+        truncateTableDevPending($con);
+        mysqli_stmt_close($stmt);
+        header("location: ../../dev-item.php?error=none");
+        exit();
+    }
+
+    function insertToDevelop($con, $BatchID, $prodID, $model, $size, $color, $heelHeight, $quantity, $categ, $price, $status, $lastUpdate){
+  
+        $sql = "insert into development(BatchID, ProductID, Model, Color, Size, HeelHeight, Category, Price, Quantity, Status, LastUpdate) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../dev-item.php?error=insertsttmntfailed");
+            exit();
+        }
+        session_start();
+        addLog($con, "Added To Develop Pending" . $prodID, "Employee #" . $_SESSION["employee_id"], date('m/d/Y'));
+
+        mysqli_stmt_bind_param($stmt, "sssssssssss", $BatchID, $prodID, $model, $color, $size, $heelHeight, $categ, $price, $quantity, $status, $lastUpdate);
+        mysqli_stmt_execute($stmt);
     
     }
 
@@ -723,13 +799,46 @@ function updateAccess($con, $accessType, $EID)
     
     }
 
+    function truncateTableDevPending($con){
+  
+        $sql = "truncate table development_pending";
+        $stmt = mysqli_stmt_init($con);
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../dev-item.php?error=insertsttmntfailed");
+            exit();
+        }
+
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        header("location: ../../dev-item.php?error=none");
+        exit();
+    
+    }
+
     function generateBatchID($con)
     {
-        $monthCode = getMonth(date('m'));
+        $monthCode = getMonth(date('n'));
         $yearCode = getYear(date('y'));
-        $lastRecord = getMaxRecord($con) + 1;
+        $lastRecord = getMaxRecord($con);
+        $lastRecordMod = 0;
 
-        
+        if ($lastRecord["maximumIndex"] < 10) {
+            $lastRecordMod = "0000" . $lastRecord["maximumIndex"];
+        }else if ($lastRecord["maximumIndex"] >= 10) {
+            $lastRecordMod = "000" . $lastRecord["maximumIndex"];
+        }else if ($lastRecord["maximumIndex"] >= 100) {
+            $lastRecordMod = "00" . $lastRecord["maximumIndex"];
+        }else if ($lastRecord["maximumIndex"] >= 1000) {
+            $lastRecordMod = "0" . $lastRecord["maximumIndex"];
+        }else {
+            $lastRecordMod = $lastRecord["maximumIndex"];
+        }
+
+        $batchCode = $monthCode . "A" . $yearCode . $lastRecordMod;
+
+        return $batchCode;
 
     }
 
@@ -777,12 +886,46 @@ function updateAccess($con, $accessType, $EID)
 
     function getYear($yearIndex)
     {
+        $startingYear = 23;
+        $yearCal = $yearIndex - $startingYear;
 
+        switch ($yearCal) {
+            case 0:
+                return $monthValue = "A";
+                break;
+            case 1:
+                return $monthValue = "B";
+                break;
+            case 2:
+                return $monthValue = "C";
+                break;
+            case 3:
+                return $monthValue = "D";
+                break;
+            case 4:
+                return $monthValue = "E";
+                break;
+            case 5:
+                return $monthValue = "F";
+                break;
+            case 6:
+                return $monthValue = "G";
+                break;
+            case 7:
+                return $monthValue = "H";
+                break;
+            case 8:
+                return $monthValue = "I";
+                break;
+            case 9:
+                return $monthValue = "J";
+                break;
+        }
     }
 
     function getMaxRecord($con)
     {
-        $sql = "select count(*) as maximumIndex from development";
+        $sql = "select count(distinct BatchID) as maximumIndex from development";
 
         $stmt = mysqli_stmt_init($con);
 
@@ -791,7 +934,7 @@ function updateAccess($con, $accessType, $EID)
             header("location: ../../edit-item.php?error=updatestatementfailed");
             exit();
         }
-        session_start();
+        //session_start();
         //addLog($con, "Updated Product " . $prodID, "Employee #" . $_SESSION["employee_id"], date('m d yy'));
 
         mysqli_stmt_execute($stmt);

@@ -42,10 +42,32 @@
             <label for="price">Price</label>
             <input type="text" name="price" id="price" placeholder="Price" readonly>
             <label for="quantity">Quantity</label>
-            <input type="number" name="quantity" id="quantity" placeholder="Quantity">
+            <input type="number" name="quantity" id="quantity" placeholder="Quantity" required>
 
-            <button name="submit" type="submit">Confirm</button>
+            <button name="submit" type="submit">Add to Development</button>
         </form> 
+
+        <div>
+            <h3>Added Items</h3>
+            <table class="general-table">
+                <tr>
+                    <th>Product ID</th>
+                    <th>Model</th>
+                    <th>Color</th>
+                    <th>Size</th>
+                    <th>Quantity</th>
+                </tr>
+                <tr>
+                    <?php
+                        displayDevelopCart($con);
+                    ?>
+                </tr>
+            </table>
+
+            <form action="php/actions/confirm-dev.php" method="POST">
+                <button name="submit" type="submit">Confirm</button>
+            </form>
+        </div>
     </div>
 
     <script src="js/devdropdown.js"></script>
