@@ -1,6 +1,32 @@
 body {
     margin: 0;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+    height: 100vh;
+}
+
+.sign-in-container{
+    padding-top: 50px;
+    padding-bottom: 50px;
+    margin-left: 35%;
+    margin-right: 35%;
+    background-color: #3014387b;
+    margin-top: 10%;
+    text-align: center;
+}
+
+.sign-in-container button{
+    margin: auto;
+    padding: 10px 35px;
+}
+
+.sign-in-container input{
+    padding: 10px 15px;
+    margin-bottom: 25px;
+    width: 200px;
+}
+
+.sign-in-container h1{
+    margin-bottom: 75px;
 }
 
 .title{
@@ -18,34 +44,72 @@ button {
     padding: .5% 2%;
 }
 
-ul{
-    list-style-type: none;
-    margin: 0;
-    padding: 5% 0 0 0;
+.navigation {
+    padding-top: 80px;
     width: 18%;
-    background-color: #5c176b;
-    position: fixed;
     height: 100%;
-    overflow: auto;
-    color: #fff;
-}
+    float: left;
+    background-color: #5c176b;
+  }
 
-li a {
-    display: block;
+  .navigation h2{
     color: #fff;
-    padding: 8px 16px;
-    text-decoration: none;
-}
-
-li a.active {
-    background-color: #04AA6D;
-    color: white;
-}
+  }
   
-li a:hover:not(.active) {
-    background-color: #555;
-    color: white;
-}
+  /* reset our lists to remove bullet points and padding */
+  .mainmenu, .submenu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* make ALL links (main and submenu) have padding and background color */
+  .mainmenu a {
+    display: block;
+    background-color: #5c176b;
+    text-decoration: none;
+    padding: 10px;
+    color: #fff;
+  }
+  
+  /* add hover behaviour */
+  .mainmenu a:hover {
+      background-color: #a231b8b4;
+  }
+  
+  
+  /* when hovering over a .mainmenu item,
+    display the submenu inside it.
+    we're changing the submenu's max-height from 0 to 200px;
+  */
+  
+  .mainmenu li:hover .submenu {
+    display: block;
+    max-height: 200px;
+  }
+  
+  /*
+    we now overwrite the background-color for .submenu links only.
+    CSS reads down the page, so code at the bottom will overwrite the code at the top.
+  */
+  
+  .submenu a {
+    background-color: #9142a87b;
+  }
+  
+  /* hover behaviour for links inside .submenu */
+  .submenu a:hover {
+    background-color: #3014387b;
+  }
+  
+  /* this is the initial state of all submenus.
+    we set it to max-height: 0, and hide the overflowed content.
+  */
+  .submenu {
+    overflow: hidden;
+    max-height: 0;
+    -webkit-transition: all 0.5s ease-out;
+  }
 
 .main-content {
     margin-left: 20%;
@@ -88,6 +152,10 @@ li a:hover:not(.active) {
 .main-content form button{
     text-align: center;
     margin: auto;
+}
+
+.main-content form select{
+    width: 150px;
 }
 
 .main-content #restock-form label {

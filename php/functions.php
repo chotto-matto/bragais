@@ -234,27 +234,39 @@ function updateAccess($con, $accessType, $EID)
         }
 
         mysqli_stmt_execute($stmt);
-
         $resultData = mysqli_stmt_get_result($stmt);
-        while($row = mysqli_fetch_assoc($resultData)) {
 
-            // foreach ($row as $columnName => $columnData) {
-            //     echo 'Column name: ' . $columnName . ' Column data: ' . $columnData . '<br />';
-            // }
-            
-            echo '<tr>
-                    <td>'.$row['BatchID'].'</td>
-                    <td>'.$row['ProductID'].'</td>
-                    <td>'.$row['Model'].'</td>
-                    <td>'.$row['Color'].'</td>
-                    <td>'.$row['Size'].'</td>
-                    <td>'.$row['HeelHeight'].'</td>
-                    <td>'.$row['Category'].'</td>
-                    <td>₱'.$row['Price'].'</td>
-                    <td>'.$row['Quantity'].'</td>
-                    <td>'.$row['Status'].'</td>
-                    <td>'.$row['LastUpdate'].'</td>
-                </tr>';
+        if ($resultData -> num_rows > 0) {
+            $container1 = 0;
+            while($row = mysqli_fetch_assoc($resultData)) {
+                $counter = batchCounter($con, $row["BatchID"]);
+                echo "<tr>";
+                            if ($container1 !== $row["BatchID"]) {
+                                echo "
+                                <td rowspan=".$counter.">".$row["BatchID"]."</td>";
+                            }
+                            echo "
+                            <td>".$row["ProductID"]."</td>
+                            <td>".$row["Model"]."</td>
+                            <td>".$row["Color"]."</td>
+                            <td>".$row["Size"]."</td>
+                            <td>".$row["HeelHeight"]."</td>
+                            <td>".$row["Category"]."</td>
+                            <td>".$row["Price"]."</td>
+                            <td>".$row["Quantity"]."</td>";
+
+                            if ($container1 !== $row["BatchID"]) {
+                                echo 
+                                "<td rowspan=".$counter.">".$row["Status"]."</td>
+                                <td rowspan=".$counter.">".$row["LastUpdate"]."</td>";
+                            }
+                        echo "</tr>";
+                    $container1 = $row["BatchID"];
+            }
+        }else{
+            $result = false;
+            return $result;
+
         }
         
         mysqli_stmt_close($stmt);
@@ -684,8 +696,8 @@ function updateAccess($con, $accessType, $EID)
             header("location: ../dev-item.php?error=insertsttmntfailed");
             exit();
         }
-        session_start();
-        addLog($con, "Added To Develop Pending" . $prodID, "Employee #" . $_SESSION["employee_id"], date('m/d/Y'));
+        //session_start();
+        //addLog($con, "Added To Develop Pending" . $prodID, "Employee #" . $_SESSION["employee_id"], date('m/d/Y'));
 
         mysqli_stmt_bind_param($stmt, "ssssssssss", $prodID, $model, $color, $size, $heelHeight, $categ, $price, $quantity, $status, $lastUpdate);
         mysqli_stmt_execute($stmt);
@@ -726,6 +738,32 @@ function updateAccess($con, $accessType, $EID)
         mysqli_stmt_close($stmt);
     }
 
+    function batchCounter($con, $batchID)
+    {
+        $sql = "select count(*) as counter from development where BatchID = ?;";
+        $stmt = mysqli_stmt_init($con);
+        // echo "<script> console.log('from php : " . $userId . "'); </script>";
+
+        //checks if there is an error with the statement
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            header("location: ../dev.php?error=stmtfailed");
+            exit();
+        }
+
+        mysqli_stmt_bind_param($stmt, "s", $batchID);
+        mysqli_stmt_execute($stmt);
+
+        $resultData = mysqli_stmt_get_result($stmt);
+
+        if ($row = mysqli_fetch_assoc($resultData)) {
+            return $row["counter"];
+        }else{
+            return 0;
+        }
+
+        mysqli_stmt_close($stmt);
+    }
+
     function cartToDevelop($con)
     {
         $sql = "select * from development_pending";
@@ -742,7 +780,7 @@ function updateAccess($con, $accessType, $EID)
 
         $resultData = mysqli_stmt_get_result($stmt);
         while($row = mysqli_fetch_assoc($resultData)) {
-            insertToDevelop($con, $batchID, $row["ProductID"], $row["Model"], $row["Color"], $row["Size"], $row["HeelHeight"], $row["Category"], $row["Price"], $row["Quantity"], $row["Status"], $row["LastUpdate"]);
+            insertToDevelop($con, $batchID, $row["ProductID"], $row["Model"], $row["Size"], $row["Color"], $row["HeelHeight"], $row["Quantity"], $row["Category"], $row["Price"], $row["Status"], $row["LastUpdate"]);
         }
         
         truncateTableDevPending($con);
